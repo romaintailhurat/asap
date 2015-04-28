@@ -3,15 +3,20 @@
 
 (require '[clojure.java.io :as io])
 
-(defn readfile [name]
-  "TODO many things"
-  (->> name
-    io/resource
-    io/reader
-    line-seq
-    println))
+(def pogues-js-dir "/Users/romaintailhurat/code/javascript/Pogues/src/js")
+
+(defn source-as-seq [source]
+  "Return a sequence of java.io/file from a source directory"
+  (file-seq
+    (clojure.java.io/file source)))
+
+(defn get-dir-collection [file-seq]
+  "Return java.io/file that are directory"
+  (filter #(.isDirectory %) file-seq))
 
 (defn -main
-  "I don't do a whole lot ... yet."
+  "MAIN !"
   [& args]
-  (readfile "test.txt"))
+  (println
+    (get-dir-collection
+      (source-as-seq pogues-js-dir))))

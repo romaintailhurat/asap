@@ -2,14 +2,18 @@
   (:require [clojure.test :refer :all]
             [asap.core :refer :all]))
 
-(defn yo [] "yo")
+(def pogues-js-dir "/Users/romaintailhurat/code/javascript/Pogues/src/js")
 
-(deftest yo-test
-  (testing "Simple yo test"
-    (is (= "yo" "yo"))))
+(defn source-as-seq [source]
+  "Return a sequence of java.io/file from a source directory"
+  (file-seq
+    (clojure.java.io/file source)))
 
-(def pogues-dir (file-seq (clojure.java.io/file "/Users/romaintailhurat/code/javascript/Pogues/")))
+(defn get-dir-collection [file-seq]
+  "Return java.io/file that are directory"
+  (filter #(.isDirectory %) file-seq))
 
 (deftest dir-read
   (testing "wesh"
-    (println (filter #(.isFile %) pogues-dir))))
+    (let [js-dir (source-as-seq pogues-js-dir)]
+      (println (get-dir-collection js-dir)))))
