@@ -11,12 +11,15 @@
     (clojure.java.io/file source)))
 
 (defn get-dir-collection [file-seq]
-  "Return java.io/file that are directory"
+  "Return java.io/file that are directories"
   (filter #(.isDirectory %) file-seq))
+
+(defn get-file-collection [file-seq]
+  "Return java.io/file that are directories"
+  (filter #(.isFile %) file-seq))
 
 (defn -main
   "MAIN !"
   [& args]
-  (println
-    (get-dir-collection
-      (source-as-seq pogues-js-dir))))
+  (let [source (nth args 0)]
+    (println "Source dir is : " source)))
