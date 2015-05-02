@@ -18,13 +18,13 @@
   "Return java.io/file that are directories"
   (filter #(.isFile %) file-seq))
 
-(defn js? [file-name]
+(defn js? [file]
   "<true> is '.js' is found in the file name"
-  (not (nil? (re-find #".js" file-name))))
+  (not (nil? (re-find #".js" (.getName file)))))
 
 (defn get-js-file-collection [file-seq]
   "Return only .js file"
-  (filter js? (map #(.getName %) file-seq)))
+  (filter js? file-seq))
 
 (defn -main
   "MAIN !"
