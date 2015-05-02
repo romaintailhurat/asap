@@ -1,3 +1,14 @@
+"
+Structure / design of a javascript application
+
+TODO filter 'vendor' js files
+TODO struct of dirs and files like -->
+  {
+    :components [menu.js editor.js]
+    :actions [pogues-actions.js]
+  }
+"
+
 (ns asap.core
   (:gen-class))
 
@@ -22,16 +33,24 @@
   "<true> is '.js' is found in the file name"
   (not (nil? (re-find #".js" (.getName file)))))
 
+(defn with-require? [line]
+  (not (nil? (re-find #"require" line))))
+
 (defn get-js-file-collection [file-seq]
   "Return only .js file"
   (filter js? file-seq))
+
+(defn collect-require [file]
+  ;; TODO
+  (with-open [r (clojure.java.io/reader file)]
+    (doseq [line (line-seq r)]
+      (if (with-require? line) (println line)))))
 
 (defn -main
   "MAIN !"
   [& args]
   (let [
     source (nth args 0)
-    first (nth
-      (get-js-file-collection (source-as-seq source)) 0)
+    js-files (get-js-file-collection (source-as-seq source))
     ]
-    (println first)))
+    (map collect-require js-files)))
