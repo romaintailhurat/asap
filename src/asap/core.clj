@@ -41,16 +41,18 @@ TODO struct of dirs and files like -->
   (filter js? file-seq))
 
 (defn collect-require [file]
-  ;; TODO
-  (with-open [r (clojure.java.io/reader file)]
-    (doseq [line (line-seq r)]
-      (if (with-require? line) (println line)))))
+  (with-open [reader (clojure.java.io/reader file)]
+    ;; doal trick, see http://stackoverflow.com/questions/6613470/
+    (doall
+      (filter with-require? (line-seq reader)))))
 
 (defn -main
   "MAIN !"
   [& args]
-  (let [
-    source (nth args 0)
-    js-files (get-js-file-collection (source-as-seq source))
-    ]
-    (map collect-require js-files)))
+  (println "-- Starting asap job")
+  (let [source (nth args 0)
+        js-files (get-js-file-collection (get-file-collection (source-as-seq source)))]
+    (println "Source is " source)
+    (println "Size of js files collection :" (count js-files))
+
+    (println (map collect-require js-files))))
