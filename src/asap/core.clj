@@ -41,8 +41,9 @@ TODO struct of dirs and files like -->
   (filter js? file-seq))
 
 (defn collect-require [file]
+  "Return a sequence of 'require' declarations"
   (with-open [reader (clojure.java.io/reader file)]
-    ;; doal trick, see http://stackoverflow.com/questions/6613470/
+    ;; doall trick, see http://stackoverflow.com/questions/6613470/
     (doall
       (filter with-require? (line-seq reader)))))
 
