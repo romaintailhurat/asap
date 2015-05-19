@@ -30,7 +30,7 @@ TODO struct of dirs and files like -->
   (filter #(.isFile %) file-seq))
 
 (defn js? [file]
-  "<true> is '.js' is found in the file name"
+  "<true> if '.js' is found in the file name"
   (not (nil? (re-find #".js" (.getName file)))))
 
 (defn with-require? [line]
@@ -39,6 +39,10 @@ TODO struct of dirs and files like -->
 (defn get-js-file-collection [file-seq]
   "Return only .js file"
   (filter js? file-seq))
+
+(defn filename-from-require [require-declaration]
+  "regexp, see http://stackoverflow.com/a/2403159"
+  (last (re-find #"\((.*?)\)" require-declaration)))
 
 (defn collect-require [file]
   "Return a sequence of 'require' declarations"
