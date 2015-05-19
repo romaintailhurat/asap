@@ -8,7 +8,7 @@
   (testing "true when a js file is found"
     (is (js? (io/file "../../resources/test.js"))))
   (testing "false when it is not a js file"
-    (is (not (js? (io/file "test.java"))))))
+    (is (not (js? (io/file "../../resources/test.txt"))))))
 
 (deftest js-file-from-require
   (testing "return the file name from a require declaration"
