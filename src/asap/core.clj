@@ -50,7 +50,7 @@ TODO struct of dirs and files like -->
 (defn extract-dependency [file]
   ""
   ;;FIXME use a record ? a map ? a type ?
-  {:name (.getName file) :deps (collect-require file)})
+  {:name (.getName file) :deps (vec (collect-require file))})
 
 (defn -main
   "MAIN !"
@@ -61,4 +61,4 @@ TODO struct of dirs and files like -->
     (println "Source is " source)
     (println "Size of js files collection :" (count js-files))
 
-    (println (map extract-dependency js-files))))
+    (println (first (map extract-dependency js-files)))))
