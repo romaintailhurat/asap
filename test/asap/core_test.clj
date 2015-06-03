@@ -13,4 +13,7 @@
 (deftest js-file-from-require
   (testing "return the file name from a require declaration"
     (def req-dec "var PoguesDispatcher = require('../dispatchers/pogues-dispatcher');")
-    (is (= "'../dispatchers/pogues-dispatcher'" (filename-from-require req-dec)))))
+    (is (= "pogues-dispatcher" (filename-from-require req-dec))))
+  (testing "return the dir name from a require declaration"
+    (def req-dec "var PoguesDispatcher = require('../dispatchers/pogues-dispatcher');")
+    (is (= "dispatchers" (directory-from-require req-dec)))))

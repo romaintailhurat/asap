@@ -18,16 +18,19 @@ TODO struct of dirs and files like -->
 
 (defn source-as-seq [source]
   "Return a sequence of java.io/file from a source directory"
-  (file-seq
-    (clojure.java.io/file source)))
+    (file-seq (clojure.java.io/file source)))
 
 (defn get-dir-collection [file-seq]
   "Return java.io/file that are directories"
   (filter #(.isDirectory %) file-seq))
 
 (defn get-file-collection [file-seq]
-  "Return java.io/file that are directories"
-  (filter #(.isFile %) file-seq))
+  "Return java.io/file that are files"
+  (filter
+    #(not
+      (contains? ["vendor" "__tests__"]
+      (clojure.string/split (.getAbsolutePath %) #"/")))
+    (filter #(.isFile %) file-seq)))
 
 (defn js? [file]
   "<true> if '.js' is found in the file name"
@@ -36,25 +39,37 @@ TODO struct of dirs and files like -->
 (defn with-require? [line]
   (not (nil? (re-find #"require" line))))
 
+(defn not-commented? [line]
+  (nil? (re-find #"//" line)))
+
 (defn get-js-file-collection [file-seq]
   "Return only .js file"
   (filter js? file-seq))
 
 (defn filename-from-require [require-declaration]
+  "Return the filename in a require declaration"
   "regexp, see http://stackoverflow.com/a/2403159"
-  (last (re-find #"\((.*?)\)" require-declaration)))
+  (println "Parsing require : " require-declaration)
+  (last (clojure.string/split (last (re-find #"\(('|\")(.*?)('|\")\)" require-declaration)) #"/")))
+
+(defn directory-from-require [require-declaration]
+  ""
+  (let [data (clojure.string/split (last (re-find #"\(('|\")(.*?)('|\")\)" require-declaration)) #"/")
+        len (count data)]
+    (nth data (- len 2))))
 
 (defn collect-require [file]
   "Return a sequence of 'require' declarations"
   (with-open [reader (clojure.java.io/reader file)]
     ;; doall trick, see http://stackoverflow.com/questions/6613470/
     (doall
-      (filter with-require? (line-seq reader)))))
+      (filter with-require? (filter not-commented? (line-seq reader))))))
 
 (defn extract-dependency [file]
   ""
   ;;FIXME use a record ? a map ? a type ?
-  {:name (.getName file) :deps (vec (collect-require file))})
+  (println "Extracting dependency from : " file)
+  {:name (.getName file) :deps (vec (map filename-from-require (collect-require file)))})
 
 (defn -main
   "MAIN !"
@@ -65,4 +80,6 @@ TODO struct of dirs and files like -->
     (println "Source is " source)
     (println "Size of js files collection :" (count js-files))
 
-    (println (first (map extract-dependency js-files)))))
+    ;; FIXME
+    (println (last (map extract-dependency js-files)))))
+    ;;(println (last js-files))))
