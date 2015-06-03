@@ -27,8 +27,7 @@ TODO struct of dirs and files like -->
 (defn get-file-collection [file-seq]
   "Return java.io/file that are files"
   (filter
-    #(not
-      (contains? ["vendor" "__tests__"]
+    #(nil? (some #{"vendor" "__tests__"}
       (clojure.string/split (.getAbsolutePath %) #"/")))
     (filter #(.isFile %) file-seq)))
 
@@ -49,8 +48,12 @@ TODO struct of dirs and files like -->
 (defn filename-from-require [require-declaration]
   "Return the filename in a require declaration"
   "regexp, see http://stackoverflow.com/a/2403159"
-  (println "Parsing require : " require-declaration)
-  (last (clojure.string/split (last (re-find #"\(('|\")(.*?)('|\")\)" require-declaration)) #"/")))
+  ;;(println "Parsing require : " require-declaration)
+  (last
+    (clojure.string/split
+      ;; FIXME so hideous !
+      (nth (re-find #"\(('|\")(.*?)('|\")\)" require-declaration) 2)
+        #"/")))
 
 (defn directory-from-require [require-declaration]
   ""
@@ -68,7 +71,7 @@ TODO struct of dirs and files like -->
 (defn extract-dependency [file]
   ""
   ;;FIXME use a record ? a map ? a type ?
-  (println "Extracting dependency from : " file)
+  ;;(println "Extracting dependency from : " file)
   {:name (.getName file) :deps (vec (map filename-from-require (collect-require file)))})
 
 (defn -main
@@ -80,6 +83,4 @@ TODO struct of dirs and files like -->
     (println "Source is " source)
     (println "Size of js files collection :" (count js-files))
 
-    ;; FIXME
-    (println (last (map extract-dependency js-files)))))
-    ;;(println (last js-files))))
+    (spit "data.edn"  (pr-str (map extract-dependency js-files)))))
